@@ -1,6 +1,15 @@
 <template>
   <h1>Events For Good</h1>
   <div class="events">
+    <div class="search-box">
+      <BaseInput
+        v-model="keyword"
+        type="text"
+        label="Search..."
+        @input="updateKeyword"
+      />
+    </div>
+
     <EventCard
       v-for="event in events"
       :key="event.id"
@@ -48,12 +57,27 @@ export default {
   data() {
     return {
       events: null,
-      totalEvents: 0
+      totalEvents: 0, // <--- Added this to store totalEvents
+      keyword: null
     }
   },
   // eslint-disable-next-line no-unused-vars
   beforeRouteEnter(routeTo, routeFrom, next) {
-    EventService.getEvents(3, parseInt(routeTo.query.page) || 1)
+    var queryFunction
+    if (this.keyword == null || this.keyword === '') {
+      queryFunction = EventService.getEvents(
+        3,
+        parseInt(routeTo.query.page) || 1
+      )
+    } else {
+      queryFunction = EventService.getEventByKeyword(
+        this.keyword,
+        3,
+        parseInt(routeTo.query.page) || 1
+      )
+    }
+
+    queryFunction
       .then((response) => {
         next((comp) => {
           comp.events = response.data
@@ -74,6 +98,28 @@ export default {
         return { name: 'NetworkError' } // <---
       })
   },
+  methods: {
+    updateKeyword() {
+      var queryFunction
+      if (this.keyword === '') {
+        queryFunction = EventService.getEvents(3, 1)
+      } else {
+        queryFunction = EventService.getEventByKeyword(this.keyword, 3, 1)
+      }
+
+      queryFunction
+        .then((response) => {
+          this.events = response.data
+          console.log(this.events)
+          this.totalEvents = response.headers['x-total-count']
+          console.log(this.totalEvents)
+        })
+        .catch(() => {
+          return { name: 'NetworkError' }
+        })
+    }
+  },
+
   computed: {
     hasNextPage() {
       let totalPages = Math.ceil(this.totalEvents / 3)
@@ -105,5 +151,8 @@ export default {
 
 #page-next {
   text-align: right;
+}
+.search-box {
+  width: 300px;
 }
 </style>
