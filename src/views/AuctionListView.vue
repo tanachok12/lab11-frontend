@@ -1,5 +1,6 @@
 <template>
-  <h1>Events For Good</h1>
+  <h1>Search an auction item</h1>
+
   <div class="events">
     <div class="search-box">
       <BaseInput
@@ -9,17 +10,16 @@
         @input="updateKeyword"
       />
     </div>
-
     <EventCard
-      v-for="event in events"
-      :key="event.id"
-      :event="event"
+      v-for="auction in auctions"
+      :key="auction.id"
+      :auction="auction"
     ></EventCard>
 
     <div class="pagination">
       <router-link
         id="page-prev"
-        :to="{ name: 'EventList', query: { page: page - 1 } }"
+        :to="{ name: 'AuctionListView', query: { page: page - 1 } }"
         rel="prev"
         v-if="page != 1"
       >
@@ -28,7 +28,7 @@
 
       <router-link
         id="page-next"
-        :to="{ name: 'EventList', query: { page: page + 1 } }"
+        :to="{ name: 'AuctionListView', query: { page: page + 1 } }"
         rel="next"
         v-if="hasNextPage"
       >
@@ -41,10 +41,10 @@
 <script>
 // @ is an alias to /src
 import EventCard from '@/components/EventCard.vue'
-import EventService from '@/services/EventService.js'
-
+//import EventService from '@/services/EventService.js'
+import AuctionService from '@/services/AuctionService.js'
 export default {
-  name: 'EventListView',
+  name: 'AuctionListView',
   props: {
     page: {
       type: Number,
@@ -56,18 +56,18 @@ export default {
   },
   data() {
     return {
-      events: null,
-      totalEvents: 0, // <--- Added this to store totalEvents
+      auctions: null,
+      totalAuctions: 0,
       keyword: null
     }
   },
   // eslint-disable-next-line no-unused-vars
   beforeRouteEnter(routeTo, routeFrom, next) {
-    EventService.getEvents(3, parseInt(routeTo.query.page) || 1)
+    AuctionService.getAuctions(3, parseInt(routeTo.query.page) || 1)
       .then((response) => {
         next((comp) => {
-          comp.events = response.data
-          comp.totalEvents = response.headers['x-total-count']
+          comp.auctions = response.data
+          comp.totalAuctions = response.headers['x-total-count']
         })
       })
       .catch(() => {
@@ -75,25 +75,24 @@ export default {
       })
   },
   beforeRouteUpdate(routeTo) {
+    //EventService.getEvents(3, parseInt(routeTo.query.page) || 1)
     var queryFunction
     if (this.keyword == null || this.keyword === '') {
-      queryFunction = EventService.getEvents(
+      queryFunction = AuctionService.getAuctions(
         3,
         parseInt(routeTo.query.page) || 1
       )
     } else {
-      queryFunction = EventService.getEventByKeyword(
+      queryFunction = AuctionService.getAuctionByKeyword(
         this.keyword,
         3,
         parseInt(routeTo.query.page) || 1
       )
     }
-
     queryFunction
-
       .then((response) => {
-        this.events = response.data // <---
-        this.totalEvents = response.headers['x-total-count'] // <---
+        this.auctions = response.data // <---
+        this.totalAuctions = response.headers['x-total-count'] // <---
       })
       .catch(() => {
         return { name: 'NetworkError' } // <---
@@ -103,33 +102,35 @@ export default {
     updateKeyword() {
       var queryFunction
       if (this.keyword === '') {
-        queryFunction = EventService.getEvents(3, 1)
+        queryFunction = AuctionService.getAuctions(3, 1)
       } else {
-        queryFunction = EventService.getEventByKeyword(this.keyword, 3, 1)
+        queryFunction = AuctionService.getAuctionByKeyword(this.keyword, 3, 1)
       }
 
       queryFunction
         .then((response) => {
-          this.events = response.data
-          console.log(this.events)
-          this.totalEvents = response.headers['x-total-count']
-          console.log(this.totalEvents)
+          this.auctions = response.data
+          console.log(this.acutions)
+          this.totalAuctions = response.headers['x-total-count']
+          console.log(this.totalAuctions)
         })
         .catch(() => {
           return { name: 'NetworkError' }
         })
     }
   },
-
   computed: {
     hasNextPage() {
-      let totalPages = Math.ceil(this.totalEvents / 3)
+      let totalPages = Math.ceil(this.totalAuctions / 3)
       return this.page < totalPages
     }
   }
 }
 </script>
 <style scoped>
+h1 {
+  color: white;
+}
 .events {
   display: flex;
   flex-direction: column;
@@ -143,7 +144,7 @@ export default {
 .pagination a {
   flex: 1;
   text-decoration: none;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 #page-prev {
@@ -153,7 +154,7 @@ export default {
 #page-next {
   text-align: right;
 }
-.search-box {
+.serach-box {
   width: 300px;
 }
 </style>

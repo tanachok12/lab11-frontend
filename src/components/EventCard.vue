@@ -1,21 +1,19 @@
 <template>
-  <router-link
-    class="event-link"
-    :to="{ name: 'EventLayoutView', params: { id: event.id } }"
-  >
-    <div class="event-card">
-      <span>@{{ event.time }} on {{ event.date }}</span>
-      <h4>{{ event.title }}</h4>
-      <span>by</span>
-      <h5>{{ event.organizer.name }}</h5>
-    </div>
-  </router-link>
+  <div class="event-card">
+    <span>Description : {{ auction.description }} </span>
+    <h5>Type: {{ auction.type }}</h5>
+    <h5>
+      Successful Bid : {{ auction.successfulBid.id }} Amount :{{
+        auction.successfulBid.amount
+      }}
+    </h5>
+  </div>
 </template>
 <script>
 export default {
   name: 'EventCard',
   props: {
-    event: {
+    auction: {
       type: Object,
       required: true
     }
@@ -27,13 +25,19 @@ export default {
   padding: 20px;
   width: 250px;
   cursor: pointer;
-  border: 1px solid #39495c;
+  background: white;
+  border: 1px solid #ffe600;
   margin-bottom: 18px;
+  transition: 0.25s;
+  border-radius: 20px;
 }
 
 .event-card:hover {
+  background: transparent;
+  color: white;
   transform: scale(1.01);
-  box-shadow: 0 3px 12px 0 rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-shadow: 0 3px 12px 0 rgba(236, 202, 5, 0.753);
 }
 
 .event-link {

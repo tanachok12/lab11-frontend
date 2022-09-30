@@ -3,9 +3,8 @@
     {{ GStore.flashMessage }}
   </div>
   <nav>
-    <router-link :to="{ name: 'EventList' }">Home</router-link> |
+    <router-link :to="{ name: 'AuctionListView' }">Home</router-link> |
     <router-link :to="{ name: 'about' }">About</router-link> |
-    <router-link :to="{ name: 'AddEvent' }"> New Event</router-link>
   </nav>
   <router-view />
 </template>
@@ -16,6 +15,9 @@ export default {
 </script>
 
 <style>
+body {
+  background: rgba(0, 0, 0, 0.89);
+}
 @keyframes yellowfade {
   from {
     background: yellow;
@@ -24,7 +26,9 @@ export default {
     background: transparent;
   }
 }
-
+.background {
+  background-color: #000;
+}
 #flashMessage {
   animation-name: yellowfade;
   animation-duration: 3s;
@@ -43,11 +47,11 @@ nav {
 
 nav a {
   font-weight: bold;
-  color: #2c3e50;
+  color: #ffffff;
 }
 
 nav a.router-link-exact-active {
-  color: #42b983;
+  color: #ffe600;
 }
 h4 {
   font-size: 20px;
