@@ -63,6 +63,18 @@ export default {
   },
   // eslint-disable-next-line no-unused-vars
   beforeRouteEnter(routeTo, routeFrom, next) {
+    EventService.getEvents(3, parseInt(routeTo.query.page) || 1)
+      .then((response) => {
+        next((comp) => {
+          comp.events = response.data
+          comp.totalEvents = response.headers['x-total-count']
+        })
+      })
+      .catch(() => {
+        next({ name: 'NetworkError' })
+      })
+  },
+  beforeRouteUpdate(routeTo) {
     var queryFunction
     if (this.keyword == null || this.keyword === '') {
       queryFunction = EventService.getEvents(
@@ -78,18 +90,7 @@ export default {
     }
 
     queryFunction
-      .then((response) => {
-        next((comp) => {
-          comp.events = response.data
-          comp.totalEvents = response.headers['x-total-count']
-        })
-      })
-      .catch(() => {
-        next({ name: 'NetworkError' })
-      })
-  },
-  beforeRouteUpdate(routeTo) {
-    return EventService.getEvents(3, parseInt(routeTo.query.page) || 1)
+
       .then((response) => {
         this.events = response.data // <---
         this.totalEvents = response.headers['x-total-count'] // <---
